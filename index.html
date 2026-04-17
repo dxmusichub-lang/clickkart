@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Clickkart</title>
+  <title>Lot Pot Fashion</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
       font-family: Arial;
       margin: 0;
-      background: #f5f5f5;
+      background: #fff0f5;
     }
 
     header {
-      background: linear-gradient(45deg, #ff6a00, #ee0979);
+      background: linear-gradient(45deg, #ff69b4, #ff1493);
       color: white;
       padding: 15px;
       display: flex;
       justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    input {
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      margin-top: 10px;
     }
 
     .container {
@@ -34,7 +42,7 @@
       background: white;
       padding: 15px;
       width: 220px;
-      border-radius: 12px;
+      border-radius: 15px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       transition: 0.3s;
@@ -59,16 +67,10 @@
       cursor: pointer;
     }
 
-    .add-btn {
-      background: #28a745;
-      color: white;
-    }
+    .add-btn { background: #ff69b4; color: white; }
+    .wish-btn { background: #ffc0cb; }
 
-    .add-btn:hover {
-      background: #218838;
-    }
-
-    .cart {
+    .cart, .wishlist {
       background: white;
       padding: 15px;
       margin-top: 20px;
@@ -85,52 +87,65 @@
 <body>
 
 <header>
-  <h2>🛒 Clickkart</h2>
-  <div>Cart (<span id="cart-count">0</span>)</div>
+  <h2>💖 Lot Pot Fashion</h2>
+  <div>
+    🔍 <input type="text" placeholder="Search..." onkeyup="searchProduct(this.value)">
+    <br>
+    Cart (<span id="cart-count">0</span>)
+  </div>
 </header>
 
 <div class="container">
 
-<div class="products">
-
-<div class="card">
-<img src="https://via.placeholder.com/200x150" />
-<h3>Headphones</h3>
-<p>₹499</p>
-<button class="add-btn" onclick="addToCart('Headphones',499)">Add to Cart</button>
-</div>
-
-<div class="card">
-<img src="https://via.placeholder.com/200x150" />
-<h3>Shoes</h3>
-<p>₹999</p>
-<button class="add-btn" onclick="addToCart('Shoes',999)">Add to Cart</button>
-</div>
-
-</div>
+<div class="products" id="product-list"></div>
 
 <div class="cart">
-<h2>🧾 Cart</h2>
+<h2>🛒 Cart</h2>
 <ul id="cart-items"></ul>
 <h3>Total ₹<span id="total">0</span></h3>
-
 <button onclick="checkout()">Checkout</button>
+</div>
+
+<div class="wishlist">
+<h2>❤️ Wishlist</h2>
+<ul id="wishlist-items"></ul>
 </div>
 
 </div>
 
 <script>
+let products = [
+  {name:"Golden Hoop Earrings", price:299, img:"https://via.placeholder.com/200"},
+  {name:"Pearl Drop Earrings", price:399, img:"https://via.placeholder.com/200"},
+  {name:"Diamond Stud Earrings", price:499, img:"https://via.placeholder.com/200"},
+  {name:"Pink Heart Earrings", price:349, img:"https://via.placeholder.com/200"}
+];
+
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+function renderProducts(list){
+  let container = document.getElementById("product-list");
+  container.innerHTML = "";
+
+  list.forEach(p=>{
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <img src="${p.img}">
+      <h3>${p.name}</h3>
+      <p>₹${p.price}</p>
+      <button class="add-btn" onclick="addToCart('${p.name}',${p.price})">Add</button>
+      <button class="wish-btn" onclick="addToWishlist('${p.name}')">❤️</button>
+    `;
+    container.appendChild(div);
+  });
+}
 
 function addToCart(name, price){
   let item = cart.find(i=>i.name===name);
-
-  if(item){
-    item.qty++;
-  } else {
-    cart.push({name, price, qty:1});
-  }
-
+  if(item){ item.qty++; }
+  else{ cart.push({name, price, qty:1}); }
   updateCart();
 }
 
@@ -138,37 +153,47 @@ function updateCart(){
   let list = document.getElementById("cart-items");
   list.innerHTML = "";
 
-  let total = 0;
-  let count = 0;
+  let total = 0, count = 0;
 
   cart.forEach(item=>{
     total += item.price * item.qty;
     count += item.qty;
 
     let li = document.createElement("li");
-    li.innerHTML = `
-      ${item.name} - ₹${item.price} x ${item.qty}
-      <button onclick="changeQty('${item.name}',1)">+</button>
-      <button onclick="changeQty('${item.name}',-1)">-</button>
-    `;
+    li.innerHTML = `${item.name} x ${item.qty}`;
     list.appendChild(li);
   });
 
   document.getElementById("total").innerText = total;
   document.getElementById("cart-count").innerText = count;
-
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function changeQty(name, val){
-  let item = cart.find(i=>i.name===name);
-  item.qty += val;
-
-  if(item.qty <= 0){
-    cart = cart.filter(i=>i.name!==name);
+function addToWishlist(name){
+  if(!wishlist.includes(name)){
+    wishlist.push(name);
+    updateWishlist();
   }
+}
 
-  updateCart();
+function updateWishlist(){
+  let list = document.getElementById("wishlist-items");
+  list.innerHTML = "";
+
+  wishlist.forEach(item=>{
+    let li = document.createElement("li");
+    li.innerText = item;
+    list.appendChild(li);
+  });
+
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
+}
+
+function searchProduct(value){
+  let filtered = products.filter(p =>
+    p.name.toLowerCase().includes(value.toLowerCase())
+  );
+  renderProducts(filtered);
 }
 
 function checkout(){
@@ -177,15 +202,14 @@ function checkout(){
     return;
   }
 
-  let confirmOrder = confirm("Proceed to payment?");
-  if(confirmOrder){
-    alert("Payment Successful 💳✅");
-    cart = [];
-    updateCart();
-  }
+  alert("Order Placed 💖");
+  cart = [];
+  updateCart();
 }
 
+renderProducts(products);
 updateCart();
+updateWishlist();
 </script>
 
 </body>
