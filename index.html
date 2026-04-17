@@ -1,88 +1,79 @@
 <style>
-  body {
-    font-family: Arial;
-    margin: 0;
-    background: #f2f2f2;
-  }
+body {
+  font-family: Arial;
+  margin: 0;
+  background: #f2f2f2;
+}
 
-  header {
-    background: linear-gradient(45deg, #444, #111);
-    color: white;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
+header {
+  background: linear-gradient(45deg, #444, #111);
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
 
-  input {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    margin: 5px 0;
-    width: 200px;
-  }
+input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin: 5px 0;
+  width: 200px;
+}
 
-  .container { padding: 20px; }
+.container { padding: 20px; }
 
-  .products {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
 
-  .card {
-    background: white;
-    padding: 15px;
-    width: 220px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: 0.3s;
-  }
+.card {
+  background: white;
+  padding: 15px;
+  width: 220px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
-  .card:hover {
-    transform: translateY(-5px);
-  }
+.card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: pointer;
+}
 
-  .card img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 10px;
-    cursor: pointer;
-  }
+button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-  button {
-    margin: 5px;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+.add-btn {
+  background: #333;
+  color: white;
+}
 
-  .add-btn {
-    background: #333;
-    color: white;
-  }
+.wish-btn {
+  background: #ddd;
+}
 
-  .add-btn:hover {
-    background: #000;
-  }
+.cart, .wishlist {
+  background: white;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
 
-  .wish-btn {
-    background: #ddd;
-  }
-
-  .cart, .wishlist {
-    background: white;
-    padding: 15px;
-    margin-top: 20px;
-    border-radius: 10px;
-  }
-
-  @media (max-width:600px){
-    .products{flex-direction:column; align-items:center;}
-    .card{width:90%;}
-  }
+@media (max-width:600px){
+  .products{flex-direction:column; align-items:center;}
+  .card{width:90%;}
+}
 </style>
