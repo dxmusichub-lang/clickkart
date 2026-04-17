@@ -3,6 +3,9 @@
 <head>
   <title>Clickkart</title>
 
+  <!-- 🔥 MOBILE FIX -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       font-family: Arial;
@@ -22,7 +25,6 @@
 
     input {
       padding: 8px;
-      width: 200px;
       border-radius: 5px;
       border: none;
     }
@@ -35,12 +37,13 @@
       display: flex;
       gap: 20px;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .card {
       background: white;
       padding: 15px;
-      width: 200px;
+      width: 220px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       text-align: center;
@@ -59,6 +62,7 @@
       padding: 8px 12px;
       cursor: pointer;
       border-radius: 5px;
+      margin-top: 5px;
     }
 
     .cart {
@@ -68,16 +72,24 @@
       border-radius: 10px;
     }
 
-    /* 📱 Mobile responsive */
+    /* 📱 MOBILE DESIGN */
     @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      input {
+        width: 100%;
+      }
+
       .products {
         flex-direction: column;
         align-items: center;
       }
 
-      input {
-        width: 100%;
-        margin-top: 10px;
+      .card {
+        width: 90%;
       }
     }
   </style>
@@ -98,21 +110,21 @@
     <div class="products" id="product-list">
 
       <div class="card">
-        <img src="https://via.placeholder.com/200" />
+        <img src="https://via.placeholder.com/200">
         <h3>Headphones</h3>
         <p>₹499</p>
         <button onclick="addToCart('Headphones', 499)">Add</button>
       </div>
 
       <div class="card">
-        <img src="https://via.placeholder.com/200" />
+        <img src="https://via.placeholder.com/200">
         <h3>Shoes</h3>
         <p>₹999</p>
         <button onclick="addToCart('Shoes', 999)">Add</button>
       </div>
 
       <div class="card">
-        <img src="https://via.placeholder.com/200" />
+        <img src="https://via.placeholder.com/200">
         <h3>Watch</h3>
         <p>₹799</p>
         <button onclick="addToCart('Watch', 799)">Add</button>
@@ -132,7 +144,7 @@
     let cartCount = 0;
     let total = 0;
 
-    // 🔥 Load saved cart
+    // Load saved cart
     window.onload = function() {
       let savedCart = JSON.parse(localStorage.getItem("cart")) || [];
       savedCart.forEach(item => {
@@ -148,7 +160,7 @@
       document.getElementById("total").innerText = total;
 
       let li = document.createElement("li");
-      li.innerHTML = name + " - ₹" + price + 
+      li.innerHTML = name + " - ₹" + price +
       " <button onclick='removeItem(this," + price + ",\"" + name + "\")'>❌</button>";
 
       document.getElementById("cart-items").appendChild(li);
@@ -174,7 +186,6 @@
       localStorage.setItem("cart", JSON.stringify(cart));
     }
 
-    // 🔍 Search function
     function searchProduct() {
       let input = document.getElementById("search").value.toLowerCase();
       let cards = document.getElementsByClassName("card");
