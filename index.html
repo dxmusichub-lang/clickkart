@@ -1,79 +1,216 @@
-<style>
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #f2f2f2;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lot Pot Fashion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial;
+      margin: 0;
+      background: #f2f2f2;
+    }
+
+    header {
+      background: #222;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    input {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin: 5px;
+      width: 200px;
+    }
+
+    .container { padding: 20px; }
+
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      width: 220px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .add-btn { background: #333; color: white; }
+    .wish-btn { background: #ddd; }
+
+    .cart, .wishlist {
+      background: white;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>Lot Pot Fashion</h2>
+  <div>
+    🔍 <input type="text" placeholder="Search..." onkeyup="searchProduct(this.value)">
+    Cart (<span id="cart-count">0</span>)
+  </div>
+</header>
+
+<div class="container">
+
+<div class="products" id="product-list"></div>
+
+<div class="cart">
+  <h2>Cart</h2>
+  <ul id="cart-items"></ul>
+  <h3>Total ₹<span id="total">0</span></h3>
+
+  <h3>Order</h3>
+  <input id="name" placeholder="Name"><br>
+  <input id="address" placeholder="Address"><br>
+
+  <button onclick="checkout()">Place Order</button>
+</div>
+
+<div class="wishlist">
+  <h2>Wishlist</h2>
+  <ul id="wishlist-items"></ul>
+</div>
+
+</div>
+
+<script>
+let products = [
+  {name:"Golden Hoop Earrings", price:299, img:"https://images.unsplash.com/photo-1600185365483-26d7c1b2a7b7"},
+  {name:"Pearl Earrings", price:399, img:"https://images.unsplash.com/photo-1617038220319-276d3cfab638"},
+  {name:"Diamond Stud", price:499, img:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f"}
+];
+
+let cart = [];
+let wishlist = [];
+
+function renderProducts(list){
+  let box = document.getElementById("product-list");
+  box.innerHTML = "";
+
+  list.forEach(p=>{
+    let div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <img src="${p.img}">
+      <h3>${p.name}</h3>
+      <p>₹${p.price}</p>
+      <button class="add-btn" onclick="addToCart('${p.name}',${p.price})">Add</button>
+      <button class="wish-btn" onclick="addToWishlist('${p.name}')">❤</button>
+    `;
+
+    box.appendChild(div);
+  });
 }
 
-header {
-  background: linear-gradient(45deg, #444, #111);
-  color: white;
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+function addToCart(name, price){
+  let item = cart.find(i=>i.name===name);
+  if(item) item.qty++;
+  else cart.push({name, price, qty:1});
+  updateCart();
 }
 
-input {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin: 5px 0;
-  width: 200px;
+function updateCart(){
+  let list = document.getElementById("cart-items");
+  list.innerHTML = "";
+
+  let total = 0;
+  let count = 0;
+
+  cart.forEach(i=>{
+    total += i.price * i.qty;
+    count += i.qty;
+
+    let li = document.createElement("li");
+    li.innerText = `${i.name} x ${i.qty}`;
+    list.appendChild(li);
+  });
+
+  document.getElementById("total").innerText = total;
+  document.getElementById("cart-count").innerText = count;
 }
 
-.container { padding: 20px; }
-
-.products {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+function addToWishlist(name){
+  if(!wishlist.includes(name)){
+    wishlist.push(name);
+    updateWishlist();
+  }
 }
 
-.card {
-  background: white;
-  padding: 15px;
-  width: 220px;
-  border-radius: 15px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+function updateWishlist(){
+  let list = document.getElementById("wishlist-items");
+  list.innerHTML = "";
+
+  wishlist.forEach(i=>{
+    let li = document.createElement("li");
+    li.innerText = i;
+    list.appendChild(li);
+  });
 }
 
-.card img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 10px;
-  cursor: pointer;
+function searchProduct(val){
+  let filtered = products.filter(p =>
+    p.name.toLowerCase().includes(val.toLowerCase())
+  );
+  renderProducts(filtered);
 }
 
-button {
-  margin: 5px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+function checkout(){
+  if(cart.length===0){
+    alert("Cart empty");
+    return;
+  }
+
+  let name = document.getElementById("name").value;
+  let address = document.getElementById("address").value;
+
+  if(!name || !address){
+    alert("Fill details");
+    return;
+  }
+
+  alert("Order placed 💖");
+  cart = [];
+  updateCart();
 }
 
-.add-btn {
-  background: #333;
-  color: white;
-}
+renderProducts(products);
+updateCart();
+updateWishlist();
+</script>
 
-.wish-btn {
-  background: #ddd;
-}
-
-.cart, .wishlist {
-  background: white;
-  padding: 15px;
-  margin-top: 20px;
-  border-radius: 10px;
-}
-
-@media (max-width:600px){
-  .products{flex-direction:column; align-items:center;}
-  .card{width:90%;}
-}
-</style>
+</body>
+</html>
