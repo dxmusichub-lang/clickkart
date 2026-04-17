@@ -2,205 +2,139 @@
 <html>
 <head>
   <title>Clickkart</title>
-
-  <!-- 🔥 MOBILE FIX -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    body {
-      font-family: Arial;
-      margin: 0;
-      background: #f1f3f6;
-    }
+    body { font-family: Arial; margin: 0; background: #f1f3f6; }
 
     header {
-      background: #2874f0;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
+      background: #2874f0; color: white; padding: 15px;
+      display: flex; justify-content: space-between; flex-wrap: wrap;
     }
 
-    input {
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-    }
+    .container { padding: 20px; }
 
-    .container {
-      padding: 20px;
-    }
-
-    .products {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+    .products { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
 
     .card {
-      background: white;
-      padding: 15px;
-      width: 220px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: center;
+      background: white; padding: 15px; width: 220px;
+      border-radius: 10px; text-align: center;
     }
 
-    .card img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-    }
+    button { margin: 5px; padding: 6px 10px; }
 
-    button {
-      background: #2874f0;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-top: 5px;
-    }
+    .cart { background: white; padding: 15px; margin-top: 20px; }
 
-    .cart {
-      background: white;
-      padding: 15px;
-      margin-top: 20px;
-      border-radius: 10px;
-    }
-
-    /* 📱 MOBILE DESIGN */
-    @media (max-width: 600px) {
-      header {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      input {
-        width: 100%;
-      }
-
-      .products {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .card {
-        width: 90%;
-      }
+    @media (max-width:600px){
+      .products{flex-direction:column; align-items:center;}
+      .card{width:90%;}
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h2>🟡 Clickkart</h2>
-    <input type="text" id="search" placeholder="Search..." onkeyup="searchProduct()">
-    <div>Cart 🛒 (<span id="cart-count">0</span>)</div>
-  </header>
+<header>
+  <h2>Clickkart</h2>
+  <div>Cart (<span id="cart-count">0</span>)</div>
+</header>
 
-  <div class="container">
+<div class="container">
 
-    <h2>🔥 Big Deals</h2>
+<div class="products">
 
-    <div class="products" id="product-list">
+<div class="card">
+<h3>Headphones</h3>
+<p>₹499</p>
+<button onclick="addToCart('Headphones',499)">Add</button>
+</div>
 
-      <div class="card">
-        <img src="https://via.placeholder.com/200">
-        <h3>Headphones</h3>
-        <p>₹499</p>
-        <button onclick="addToCart('Headphones', 499)">Add</button>
-      </div>
+<div class="card">
+<h3>Shoes</h3>
+<p>₹999</p>
+<button onclick="addToCart('Shoes',999)">Add</button>
+</div>
 
-      <div class="card">
-        <img src="https://via.placeholder.com/200">
-        <h3>Shoes</h3>
-        <p>₹999</p>
-        <button onclick="addToCart('Shoes', 999)">Add</button>
-      </div>
+</div>
 
-      <div class="card">
-        <img src="https://via.placeholder.com/200">
-        <h3>Watch</h3>
-        <p>₹799</p>
-        <button onclick="addToCart('Watch', 799)">Add</button>
-      </div>
+<div class="cart">
+<h2>Cart</h2>
+<ul id="cart-items"></ul>
+<h3>Total ₹<span id="total">0</span></h3>
 
-    </div>
+<button onclick="checkout()">Checkout</button>
+</div>
 
-    <div class="cart">
-      <h2>Your Cart 🛒</h2>
-      <ul id="cart-items"></ul>
-      <h3>Total: ₹<span id="total">0</span></h3>
-    </div>
+</div>
 
-  </div>
+<script>
+let cart = [];
 
-  <script>
-    let cartCount = 0;
-    let total = 0;
+function addToCart(name, price){
+  let item = cart.find(i=>i.name===name);
 
-    // Load saved cart
-    window.onload = function() {
-      let savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-      savedCart.forEach(item => {
-        addToCart(item.name, item.price, false);
-      });
-    };
+  if(item){
+    item.qty++;
+  } else {
+    cart.push({name, price, qty:1});
+  }
 
-    function addToCart(name, price, save = true) {
-      cartCount++;
-      total += price;
+  updateCart();
+}
 
-      document.getElementById("cart-count").innerText = cartCount;
-      document.getElementById("total").innerText = total;
+function updateCart(){
+  let list = document.getElementById("cart-items");
+  list.innerHTML = "";
 
-      let li = document.createElement("li");
-      li.innerHTML = name + " - ₹" + price +
-      " <button onclick='removeItem(this," + price + ",\"" + name + "\")'>❌</button>";
+  let total = 0;
+  let count = 0;
 
-      document.getElementById("cart-items").appendChild(li);
+  cart.forEach(item=>{
+    total += item.price * item.qty;
+    count += item.qty;
 
-      if (save) {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        cart.push({name, price});
-        localStorage.setItem("cart", JSON.stringify(cart));
-      }
-    }
+    let li = document.createElement("li");
+    li.innerHTML = `
+      ${item.name} - ₹${item.price} x ${item.qty}
+      <button onclick="changeQty('${item.name}',1)">+</button>
+      <button onclick="changeQty('${item.name}',-1)">-</button>
+    `;
+    list.appendChild(li);
+  });
 
-    function removeItem(btn, price, name) {
-      btn.parentElement.remove();
+  document.getElementById("total").innerText = total;
+  document.getElementById("cart-count").innerText = count;
+}
 
-      cartCount--;
-      total -= price;
+function changeQty(name, val){
+  let item = cart.find(i=>i.name===name);
+  item.qty += val;
 
-      document.getElementById("cart-count").innerText = cartCount;
-      document.getElementById("total").innerText = total;
+  if(item.qty <= 0){
+    cart = cart.filter(i=>i.name!==name);
+  }
 
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart = cart.filter(item => item.name !== name);
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
+  updateCart();
+}
 
-    function searchProduct() {
-      let input = document.getElementById("search").value.toLowerCase();
-      let cards = document.getElementsByClassName("card");
+function checkout(){
+  if(cart.length===0){
+    alert("Cart empty ❌");
+    return;
+  }
 
-      for (let i = 0; i < cards.length; i++) {
-        let title = cards[i].getElementsByTagName("h3")[0].innerText.toLowerCase();
+  let confirmOrder = confirm("Proceed to payment?");
+  if(confirmOrder){
+    fakePayment();
+  }
+}
 
-        if (title.includes(input)) {
-          cards[i].style.display = "block";
-        } else {
-          cards[i].style.display = "none";
-        }
-      }
-    }
-  </script>
+function fakePayment(){
+  alert("Payment Successful 💳✅");
+  cart = [];
+  updateCart();
+}
+</script>
 
 </body>
 </html>
